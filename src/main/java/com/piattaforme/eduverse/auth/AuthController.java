@@ -3,6 +3,7 @@ package com.piattaforme.eduverse.auth;
 import com.piattaforme.eduverse.security.JwtService;
 import com.piattaforme.eduverse.user.User;
 import com.piattaforme.eduverse.user.UserRepository;
+import com.piattaforme.eduverse.user.UserRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,24 +25,36 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
+    @Autowired
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public ResponseEntity<?> register(@RequestBody UserRequestDto dto) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email already in use.");
+        }
+
+        User user = User.builder()
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .role(dto.getRole())
+                .build();
+
         userRepository.save(user);
         return ResponseEntity.ok("User registered successfully!");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        UserDetails userDetails = (UserDetails) auth.getPrincipal();
-        String token = jwtService.generateToken(userDetails);
-        return ResponseEntity.ok(Map.of("token", token));
+
+        UserDetails user = (UserDetails) auth.getPrincipal();
+        String token = jwtService.generateToken(user);
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 }

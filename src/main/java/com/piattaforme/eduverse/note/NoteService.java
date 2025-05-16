@@ -18,12 +18,12 @@ public class NoteService {
     private final CourseRepository courseRepo;
     private final UserRepository userRepo;
 
-    public NoteResponseDto create(NoteRequestDto dto) {
-        User student = userRepo.findById(dto.getStudentId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+    public NoteResponseDto createForLoggedUser(NoteRequestDto dto, String email) {
+        User student = userRepo.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Course course = courseRepo.findById(dto.getCourseId())
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+        Course course = courseRepo.findByTitleIgnoreCase(String.valueOf(dto.getCourseTitle()))
+                .orElseThrow(() -> new RuntimeException("Course not found with title: " + dto.getCourseTitle()));
 
         Note note = Note.builder()
                 .title(dto.getTitle())
@@ -37,6 +37,8 @@ public class NoteService {
         noteRepo.save(note);
         return mapToDto(note);
     }
+
+
 
     public List<NoteResponseDto> getAllByStudent(Long studentId) {
         return noteRepo.findByStudentId(studentId).stream()

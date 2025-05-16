@@ -9,5 +9,5 @@ public class AssignmentRequestDto {
     private String title;
     private String description;
     private LocalDate dueDate;
-    private Long courseId;
+    private Long courseTitle;
 }

@@ -2,6 +2,7 @@ package com.piattaforme.eduverse.note;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,8 +15,12 @@ public class NoteController {
     private final NoteService noteService;
 
     @PostMapping
-    public ResponseEntity<NoteResponseDto> create(@RequestBody NoteRequestDto dto) {
-        return ResponseEntity.ok(noteService.create(dto));
+    public ResponseEntity<NoteResponseDto> create(
+            @RequestBody NoteRequestDto dto,
+            Authentication authentication) {
+
+        String email = authentication.getName(); // email from token
+        return ResponseEntity.ok(noteService.createForLoggedUser(dto, email));
     }
 
     @GetMapping("/student/{id}")

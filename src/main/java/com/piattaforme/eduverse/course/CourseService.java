@@ -15,8 +15,9 @@ public class CourseService {
     private final UserRepository userRepo;
 
     public CourseResponseDto create(CourseRequestDto dto) {
-        User instructor = userRepo.findById(dto.getInstructorId())
+        User instructor = userRepo.findByEmailIgnoreCase(String.valueOf(dto.getInstructorName()))
                 .orElseThrow(() -> new RuntimeException("Instructor not found"));
+
 
         Course course = Course.builder()
                 .title(dto.getTitle())
@@ -25,11 +26,12 @@ public class CourseService {
                 .build();
 
         courseRepo.save(course);
+
         return CourseResponseDto.builder()
                 .id(course.getId())
                 .title(course.getTitle())
                 .description(course.getDescription())
-                .instructorName(instructor.getName())
+                .instructorEmail(instructor.getName())
                 .build();
     }
 
@@ -38,7 +40,7 @@ public class CourseService {
                 .id(c.getId())
                 .title(c.getTitle())
                 .description(c.getDescription())
-                .instructorName(c.getInstructor().getName())
+                .instructorEmail(c.getInstructor().getName())
                 .build()).toList();
     }
 }

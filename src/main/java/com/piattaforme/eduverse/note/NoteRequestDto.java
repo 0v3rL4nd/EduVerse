@@ -6,6 +6,5 @@ import lombok.Data;
 public class NoteRequestDto {
     private String title;
     private String content;
-    private Long studentId;
-    private Long courseId;
+    private Long courseTitle;
 }

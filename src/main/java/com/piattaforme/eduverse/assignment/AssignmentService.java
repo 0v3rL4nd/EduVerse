@@ -15,7 +15,7 @@ public class AssignmentService {
     private final CourseRepository courseRepo;
 
     public AssignmentResponseDto create(AssignmentRequestDto dto) {
-        Course course = courseRepo.findById(dto.getCourseId())
+        Course course = courseRepo.findByTitleIgnoreCase(String.valueOf(dto.getCourseTitle()))
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
         Assignment assignment = Assignment.builder()

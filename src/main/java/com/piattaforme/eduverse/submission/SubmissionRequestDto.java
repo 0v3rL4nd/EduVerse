@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SubmissionRequestDto {
-    private Long assignmentId;
-    private Long studentId;
+    private String assignmentTitle;
+    private String courseTitle;
     private String fileUrl;
 }
