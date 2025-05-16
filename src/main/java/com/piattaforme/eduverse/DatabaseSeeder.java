@@ -25,43 +25,56 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.count() > 0) return; // prevent duplicate seeds
+        System.out.println("🚀 STARTING DatabaseSeeder...");
 
-        // Create Instructor
-        User instructor = User.builder()
-                .name("Dr. John Smith")
-                .email("john@eduverse.com")
-                .password(passwordEncoder.encode("john123"))
-                .role(Role.INSTRUCTOR)
-                .build();
-        userRepository.save(instructor);
+        try {
+            long userCount = userRepository.count();
+            System.out.println("🔍 Current user count: " + userCount);
+            if (userCount > 0) {
+                System.out.println("⚠️ Skipping seeding. Users already exist.");
+                return;
+            }
 
-        // Create Student
-        User student = User.builder()
-                .name("Alice Johnson")
-                .email("alice@student.com")
-                .password(passwordEncoder.encode("alice123"))
-                .role(Role.STUDENT)
-                .build();
-        userRepository.save(student);
+            // Create Instructor
+            User instructor = User.builder()
+                    .name("Dr. John Smith")
+                    .email("john@eduverse.com")
+                    .password(passwordEncoder.encode("john123"))
+                    .role(Role.INSTRUCTOR)
+                    .build();
+            userRepository.save(instructor);
 
-        // Create Course
-        Course course = Course.builder()
-                .title("Spring Boot Mastery")
-                .description("In-depth Spring Boot with security, JPA, and testing")
-                .instructor(instructor)
-                .build();
-        courseRepository.save(course);
+            // Create Student
+            User student = User.builder()
+                    .name("Alice Johnson")
+                    .email("alice@student.com")
+                    .password(passwordEncoder.encode("alice123"))
+                    .role(Role.STUDENT)
+                    .build();
+            userRepository.save(student);
 
-        // Create Assignment
-        Assignment assignment = Assignment.builder()
-                .title("Phase 1 Project Setup")
-                .description("Create entities, security config, and Angular starter.")
-                .dueDate(LocalDate.now().plusDays(10))
-                .course(course)
-                .build();
-        assignmentRepository.save(assignment);
+            // Create Course
+            Course course = Course.builder()
+                    .title("Spring Boot Mastery")
+                    .description("In-depth Spring Boot with security, JPA, and testing")
+                    .instructor(instructor)
+                    .build();
+            courseRepository.save(course);
 
-        System.out.println("✅ Seeded: Instructor, Student, Course, Assignment");
+            // Create Assignment
+            Assignment assignment = Assignment.builder()
+                    .title("Phase 1 Project Setup")
+                    .description("Create entities, security config, and Angular starter.")
+                    .dueDate(LocalDate.now().plusDays(10))
+                    .course(course)
+                    .build();
+            assignmentRepository.save(assignment);
+
+            System.out.println("✅ Seeded: Instructor, Student, Course, Assignment");
+
+        } catch (Exception e) {
+            System.err.println("❌ Seeder error:");
+            e.printStackTrace();
+        }
     }
 }
