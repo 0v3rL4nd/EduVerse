@@ -54,4 +54,25 @@ public class SubmissionService {
                 .grade(sub.getGrade())
                 .build();
     }
+
+    public SubmissionResponseDto gradeSubmission(Long id, Double grade) {
+        Submission submission = submissionRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Submission not found"));
+        submission.setGrade(grade);
+        submissionRepo.save(submission);
+        return mapToDto(submission);
+    }
+
+    public List<SubmissionResponseDto> getSubmissionsByAssignmentTitle(String title) {
+        Assignment assignment = assignmentRepo.findByTitleIgnoreCase(title)
+                .orElseThrow(() -> new RuntimeException("Assignment not found"));
+        return submissionRepo.findByAssignment(assignment).stream().map(this::mapToDto).toList();
+    }
+
+    public List<SubmissionResponseDto> getSubmissionsForStudent(String email) {
+        User student = userRepo.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        return submissionRepo.findByStudent(student).stream().map(this::mapToDto).toList();
+    }
+
 }

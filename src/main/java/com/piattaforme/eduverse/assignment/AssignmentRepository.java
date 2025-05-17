@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
     Optional<Assignment> findByTitleIgnoreCaseAndCourse(String title, Course course);
-
+    Optional<Assignment> findByTitleIgnoreCase(String title);
 }
